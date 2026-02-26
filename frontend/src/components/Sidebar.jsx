@@ -1,10 +1,11 @@
 import React from "react";
 
 const MAIN_NAV = [
-  { id: "boards",    label: "Boards",     icon: "📌" },
-  { id: "backlog",   label: "Backlog",    icon: "📚" },
-  { id: "workitems", label: "Work Items", icon: "📋" },
-  { id: "reports",   label: "Reports",    icon: "📊" },
+  { id: "boards",     label: "Boards",     icon: "📌" },
+  { id: "sprints",    label: "Sprints",    icon: "🏃" },
+  { id: "backlog",    label: "Backlog",    icon: "📚" },
+  { id: "workitems",  label: "Work Items", icon: "📋" },
+  { id: "reports",    label: "Reports",    icon: "📊" },
 ];
 
 const BOTTOM_NAV = [

@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useState } from "react";
 import Sidebar from "./components/Sidebar.jsx";
 import WorkItemModal from "./components/WorkItemModal.jsx";
-import Boards from "./pages/Boards.jsx";
-import Backlog from "./pages/Backlog.jsx";
+import Boards      from "./pages/Boards.jsx";
+import SprintBoard from "./pages/SprintBoard.jsx";
+import Backlog      from "./pages/Backlog.jsx";
 import WorkItems from "./pages/WorkItems.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import Projects from "./pages/Projects.jsx";
@@ -97,6 +98,7 @@ function App() {
         {/* ── Main content ── */}
         <main className="main-content">
           {page === "boards"     && <Boards     {...sharedProps} />}
+          {page === "sprints"    && <SprintBoard {...sharedProps} />}
           {page === "backlog"    && <Backlog    {...sharedProps} />}
           {page === "workitems"  && <WorkItems  {...sharedProps} />}
           {page === "reports"    && <Dashboard />}
