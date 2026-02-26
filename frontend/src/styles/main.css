@@ -2530,3 +2530,656 @@ textarea.form-control { resize: vertical; min-height: 70px; }
 .s-btn-danger:hover { background: #a80000; border-color: #a80000; }
 
 
+/* =====================================================================
+   BOARDS PAGE — ADO-style tabs
+   ===================================================================== */
+.boards-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background: var(--ado-white);
+}
+
+/* ── Board Header ─────────────────────────────────────────────────── */
+.boards-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px 0;
+  flex-shrink: 0;
+}
+.boards-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.boards-team-icon {
+  width: 28px; height: 28px;
+  background: var(--ado-blue);
+  color: #fff;
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700;
+  flex-shrink: 0;
+}
+.boards-team-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ado-text);
+  margin: 0;
+}
+.boards-icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 6px;
+  font-size: 14px;
+  color: var(--ado-muted);
+  border-radius: 3px;
+  line-height: 1;
+}
+.boards-icon-btn:hover { background: var(--ado-hover); color: var(--ado-text); }
+.boards-header-right { display: flex; align-items: center; gap: 8px; }
+.boards-backlog-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 12px;
+  background: none;
+  border: 1px solid var(--ado-border);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--ado-blue);
+  font-weight: 500;
+  transition: background .15s;
+}
+.boards-backlog-btn:hover { background: var(--ado-sel); }
+.boards-backlog-icon { font-size: 15px; }
+
+/* ── Tab Bar ──────────────────────────────────────────────────────── */
+.boards-tab-bar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--ado-border);
+  flex-shrink: 0;
+  background: var(--ado-white);
+}
+.boards-tabs {
+  display: flex;
+  gap: 0;
+}
+.boards-tab {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ado-muted);
+  cursor: pointer;
+  transition: color .15s, border-color .15s;
+  white-space: nowrap;
+  margin-bottom: -1px;
+}
+.boards-tab:hover { color: var(--ado-text); }
+.boards-tab--active {
+  color: var(--ado-blue);
+  border-bottom-color: var(--ado-blue);
+  font-weight: 600;
+}
+
+/* Tab controls (type filter, expand) */
+.boards-tab-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 6px;
+}
+.boards-type-btn {
+  display: flex; align-items: center; gap: 4px;
+  padding: 4px 10px;
+  background: none;
+  border: 1px solid var(--ado-border);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ado-text);
+}
+.boards-type-btn:hover { background: var(--ado-hover); }
+.boards-chevron { font-size: 11px; color: var(--ado-muted); }
+.boards-type-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: #fff;
+  border: 1px solid var(--ado-border);
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.14);
+  z-index: 200;
+  min-width: 130px;
+  padding: 4px 0;
+}
+.boards-type-option {
+  display: block;
+  width: 100%;
+  padding: 7px 14px;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--ado-text);
+}
+.boards-type-option:hover { background: var(--ado-hover); }
+.boards-type-option--active { color: var(--ado-blue); font-weight: 600; }
+.boards-expand-btn { font-size: 16px; }
+
+/* ── Content Area ─────────────────────────────────────────────────── */
+.boards-content {
+  flex: 1;
+  overflow: auto;
+  padding: 0;
+  background: var(--ado-bg);
+}
+/* Override for board tab — needs no padding */
+.boards-content .kanban-board { padding: 16px; }
+
+
+/* =====================================================================
+   ANALYTICS TAB
+   ===================================================================== */
+.analytics-page {
+  padding: 24px;
+  background: var(--ado-bg);
+  min-height: 100%;
+}
+.analytics-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--ado-text);
+  margin-bottom: 24px;
+}
+.analytics-cards {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.analytics-card {
+  background: var(--ado-white);
+  border: 1px solid var(--ado-border);
+  border-radius: 4px;
+  padding: 20px 24px;
+  min-width: 280px;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.06);
+}
+.analytics-card-header {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ado-text);
+}
+.analytics-card-chart {
+  margin: 8px 0 4px;
+}
+.analytics-card-stat-label {
+  font-size: 12px;
+  color: var(--ado-muted);
+  margin-top: 4px;
+}
+.analytics-card-stat {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--ado-text);
+  line-height: 1.1;
+}
+.analytics-view-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ado-blue);
+  padding: 8px 0 0;
+  margin-top: auto;
+  border-top: 1px solid var(--ado-border);
+}
+.analytics-view-btn:hover { text-decoration: underline; }
+.analytics-arrow { font-size: 16px; }
+
+/* Full report modal */
+.analytics-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.45);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.analytics-modal {
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.2);
+  width: 720px;
+  max-width: 95vw;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+.analytics-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--ado-border);
+  font-size: 16px;
+  font-weight: 600;
+}
+.analytics-modal-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: var(--ado-muted);
+  padding: 2px 6px;
+}
+.analytics-modal-close:hover { color: var(--ado-text); }
+.analytics-modal-body {
+  padding: 24px;
+  overflow: auto;
+}
+
+
+/* =====================================================================
+   TIMELINE (Epic/Feature & Feature Timeline)
+   ===================================================================== */
+.timeline-container {
+  display: flex;
+  flex-direction: column;
+  background: var(--ado-white);
+  min-height: 100%;
+  user-select: none;
+}
+.timeline-header-row,
+.timeline-row {
+  display: flex;
+  align-items: stretch;
+  border-bottom: 1px solid var(--ado-border);
+  min-height: 44px;
+}
+.timeline-header-row { background: #f3f2f1; position: sticky; top: 0; z-index: 10; }
+.timeline-label-col {
+  width: 300px;
+  min-width: 300px;
+  max-width: 300px;
+  padding: 8px 12px;
+  border-right: 1px solid var(--ado-border);
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  overflow: hidden;
+}
+.timeline-label-header {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--ado-muted);
+  align-items: center;
+}
+.timeline-chart-col {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+.timeline-sprint-headers {
+  display: flex;
+  height: 44px;
+}
+.timeline-sprint-header {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid var(--ado-border);
+  padding: 2px 4px;
+}
+.timeline-sprint-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ado-text);
+}
+.timeline-sprint-date {
+  font-size: 10px;
+  color: var(--ado-muted);
+}
+.timeline-today-line {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 2px;
+  background: #cc293d;
+  z-index: 5;
+  pointer-events: none;
+}
+.timeline-body { overflow: auto; }
+.timeline-row--parent  { background: var(--ado-white); }
+.timeline-row--child   { background: #fafaf9; }
+.timeline-row--parent:hover,
+.timeline-row--child:hover  { background: var(--ado-hover); }
+
+.timeline-item-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow: hidden;
+  width: 100%;
+}
+.timeline-item-info--child { padding-left: 4px; }
+.timeline-expand-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--ado-muted);
+  padding: 0 2px;
+  line-height: 1;
+}
+.timeline-type-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 3px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.timeline-item-id {
+  font-size: 11px;
+  color: var(--ado-blue);
+  font-weight: 600;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.timeline-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.timeline-item-title {
+  font-size: 12px;
+  color: var(--ado-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Gantt bars */
+.timeline-grid {
+  display: flex;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.timeline-grid-cell {
+  flex: 1;
+  border-right: 1px solid #edebe9;
+}
+.timeline-bar {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 22px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  padding: 0 6px;
+  overflow: hidden;
+  cursor: default;
+  z-index: 2;
+  transition: opacity .15s;
+  min-width: 30px;
+}
+.timeline-bar:hover { opacity: .85; }
+.timeline-bar--epic    { background: #5c2d91; }
+.timeline-bar--feature { background: #773b93; }
+.timeline-bar--story   { background: #009ccc; }
+.timeline-bar--task    { background: #d9a800; }
+.timeline-bar--bug     { background: #cc293d; }
+.timeline-bar-label {
+  font-size: 11px;
+  color: #fff;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Empty state */
+.timeline-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  gap: 10px;
+  color: var(--ado-muted);
+  background: var(--ado-white);
+  min-height: 300px;
+}
+.timeline-empty-icon { font-size: 48px; }
+.timeline-empty-text { font-size: 16px; font-weight: 600; color: var(--ado-text); }
+.timeline-empty-sub  { font-size: 13px; }
+
+
+/* =====================================================================
+   EPIC ROADMAP
+   ===================================================================== */
+.roadmap-container {
+  padding: 20px 24px;
+  background: var(--ado-bg);
+  min-height: 100%;
+}
+.roadmap-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.roadmap-toolbar-label {
+  font-size: 12px;
+  color: var(--ado-muted);
+  font-weight: 500;
+}
+.roadmap-filter-btn {
+  padding: 4px 12px;
+  background: #fff;
+  border: 1px solid var(--ado-border);
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--ado-text);
+  transition: background .14s, border-color .14s;
+}
+.roadmap-filter-btn:hover { background: var(--ado-hover); }
+.roadmap-filter-btn--active {
+  background: var(--ado-sel);
+  border-color: var(--ado-blue);
+  color: var(--ado-blue);
+  font-weight: 600;
+}
+.roadmap-toolbar-count {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--ado-muted);
+}
+
+.roadmap-epics {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.roadmap-epic-card {
+  background: var(--ado-white);
+  border: 1px solid var(--ado-border);
+  border-radius: 4px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.06);
+  overflow: hidden;
+}
+.roadmap-epic-header {
+  padding: 14px 18px;
+  cursor: pointer;
+}
+.roadmap-epic-header:hover { background: var(--ado-hover); }
+.roadmap-epic-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+.roadmap-epic-icon { font-size: 14px; color: #5c2d91; flex-shrink: 0; }
+.roadmap-epic-id   { font-size: 12px; font-weight: 600; flex-shrink: 0; }
+.roadmap-epic-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ado-text);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.roadmap-epic-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.roadmap-state-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+  border: 1px solid;
+  white-space: nowrap;
+}
+.roadmap-state-badge--sm { font-size: 10px; padding: 1px 6px; }
+.roadmap-priority-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.roadmap-quarter {
+  font-size: 11px;
+  color: var(--ado-muted);
+  background: var(--ado-hover);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+.roadmap-expand-btn {
+  font-size: 12px;
+  color: var(--ado-muted);
+  flex-shrink: 0;
+}
+.roadmap-progress-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.roadmap-progress-bar-track {
+  flex: 1;
+  height: 6px;
+  background: #edebe9;
+  border-radius: 3px;
+  overflow: hidden;
+}
+.roadmap-progress-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width .3s;
+}
+.roadmap-progress-label {
+  font-size: 11px;
+  color: var(--ado-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.roadmap-features-list {
+  border-top: 1px solid var(--ado-border);
+  padding: 8px 0;
+  background: #fafaf9;
+}
+.roadmap-feature-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 18px 7px 36px;
+  font-size: 13px;
+  transition: background .12s;
+}
+.roadmap-feature-row:hover { background: var(--ado-hover); }
+.roadmap-feature-row--standalone {
+  padding-left: 18px;
+}
+.roadmap-feature-icon { font-size: 12px; color: #773b93; flex-shrink: 0; }
+.roadmap-feature-id   { font-size: 11px; font-weight: 600; flex-shrink: 0; }
+.roadmap-feature-title {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--ado-text);
+}
+.roadmap-feature-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.roadmap-sprint-label {
+  font-size: 11px;
+  color: var(--ado-muted);
+  background: var(--ado-hover);
+  padding: 1px 7px;
+  border-radius: 3px;
+}
+.roadmap-sp {
+  font-size: 11px;
+  color: var(--ado-muted);
+  font-weight: 600;
+}
+.roadmap-no-features,
+.roadmap-no-results {
+  padding: 12px 36px;
+  font-size: 13px;
+  color: var(--ado-muted);
+  font-style: italic;
+}
+.roadmap-orphan-section {
+  background: var(--ado-white);
+  border: 1px solid var(--ado-border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.roadmap-orphan-title {
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ado-muted);
+  background: #f3f2f1;
+  border-bottom: 1px solid var(--ado-border);
+}
+
+
+
