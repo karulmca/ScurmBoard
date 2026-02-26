@@ -10,6 +10,7 @@ const MAIN_NAV = [
 
 const BOTTOM_NAV = [
   { id: "projects",  label: "Projects",   icon: "🗂️" },
+  { id: "teams",     label: "Teams",      icon: "👥" },
   { id: "retrospectives", label: "Retrospectives", icon: "📝" },
   { id: "user-settings", label: "User Settings", icon: "👤" },
   { id: "settings",  label: "Settings",   icon: "⚙️" },

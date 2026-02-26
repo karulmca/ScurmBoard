@@ -3,6 +3,9 @@ from ..models.user import User, ProjectRole
 from ..schemas.user import UserCreate, UserUpdate, ProjectRoleCreate, ProjectRoleUpdate
 
 # User CRUD
+def list_users(db: Session):
+    return db.query(User).order_by(User.name).all()
+
 def get_user(db: Session, user_id: int):
     return db.query(User).filter(User.id == user_id).first()
 

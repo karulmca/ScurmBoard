@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useConfig } from "../hooks/useConfig.js";
 
-export default function ProjectModal({ initial = {}, organizations = [], onSave, onClose }) {
+export default function ProjectModal({ initial = {}, organizations = [], teams = [], onSave, onClose }) {
   const config = useConfig();
   const isEdit = !!initial.id;
   const [form, setForm] = useState({
@@ -11,13 +11,23 @@ export default function ProjectModal({ initial = {}, organizations = [], onSave,
     methodology:     initial.methodology     ?? "Scrum",
     lead:            initial.lead            ?? "",
     color:           initial.color           ?? "#0078d4",
-    icon:            initial.icon            ?? "📁",
+    icon:            initial.icon            ?? "📋",
     sprint_duration: initial.sprint_duration ?? 14,
     org_id:          initial.org_id          ?? "",
     state:           initial.state           ?? "active",
   });
+  // Team IDs selected for this project — pre-populated from initial.team_ids on edit
+  const [selectedTeamIds, setSelectedTeamIds] = useState(
+    Array.isArray(initial.team_ids) ? initial.team_ids : []
+  );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+
+  const toggleTeam = (teamId) => {
+    setSelectedTeamIds((prev) =>
+      prev.includes(teamId) ? prev.filter((id) => id !== teamId) : [...prev, teamId]
+    );
+  };
 
   // Auto-generate key from name
   const handleNameChange = (val) => {
@@ -42,6 +52,7 @@ export default function ProjectModal({ initial = {}, organizations = [], onSave,
         key: form.key.toUpperCase(),
         sprint_duration: Number(form.sprint_duration) || 14,
         org_id: form.org_id ? Number(form.org_id) : null,
+        team_ids: selectedTeamIds,   // caller handles project↔team assignment
       });
     } catch (err) {
       setError(err.message);
@@ -144,6 +155,56 @@ export default function ProjectModal({ initial = {}, organizations = [], onSave,
               </select>
             </div>
           )}
+
+          {/* ── Team Access ─────────────────────────────────────────── */}
+          <div className="form-group">
+            <label className="form-label">
+              Team Access
+              <span className="form-label-badge">board visibility</span>
+            </label>
+            <p className="form-hint" style={{ marginBottom: 8 }}>
+              Assign teams whose members can view this project's board.
+              Leave all unselected to allow any user to view the board.
+            </p>
+            {teams.length === 0 ? (
+              <div className="team-selector-empty">
+                No teams exist yet — go to <strong>Teams</strong> in the sidebar to create one.
+              </div>
+            ) : (
+              <div className="team-selector-grid">
+                {teams.map((t) => {
+                  const isSelected = selectedTeamIds.includes(t.id);
+                  return (
+                    <button
+                      key={t.id}
+                      type="button"
+                      className={`team-selector-chip ${isSelected ? "selected" : ""}`}
+                      onClick={() => toggleTeam(t.id)}
+                    >
+                      <span className="team-chip-check">{isSelected ? "✓" : ""}</span>
+                      <span className="team-chip-name">{t.name}</span>
+                      <span className="team-chip-count">
+                        {t.member_count} member{t.member_count !== 1 ? "s" : ""}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+            {selectedTeamIds.length > 0 && (
+              <p className="form-hint team-access-summary">
+                🔒 Board restricted to{" "}
+                <strong>
+                  {teams.filter((t) => selectedTeamIds.includes(t.id)).map((t) => t.name).join(", ")}
+                </strong>
+              </p>
+            )}
+            {selectedTeamIds.length === 0 && teams.length > 0 && (
+              <p className="form-hint team-access-summary">
+                🌐 Board open to all users (no team restriction)
+              </p>
+            )}
+          </div>
 
           {/* Color picker */}
           <div className="form-group">

@@ -10,6 +10,8 @@ import Projects from "./pages/Projects.jsx";
 import Settings from "./pages/Settings.jsx";
 import UserSettings from "./pages/UserSettings.jsx";
 import Retrospectives from "./pages/Retrospectives.jsx";
+import Teams from "./pages/Teams.jsx";
+import { listUsers } from "./services/api.js";
 import { getWorkItems, createWorkItem, updateWorkItem, updateTaskStatus, deleteWorkItem } from "./services/api.js";
 
 function App() {
@@ -18,6 +20,23 @@ function App() {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalDefaults, setModalDefaults] = useState({});
   const [currentProject, setCurrentProject] = useState(null);
+
+  // currentUser: selected via topbar picker — drives board access control
+  const [currentUser, setCurrentUser] = useState(() => {
+    try { return JSON.parse(localStorage.getItem("scrumboard_current_user")) || null; } catch { return null; }
+  });
+  const [showUserPicker, setShowUserPicker] = useState(false);
+  const [allUsers, setAllUsers] = useState([]);
+
+  const loadUsers = useCallback(async () => {
+    try { const u = await listUsers(); setAllUsers(u); } catch {}
+  }, []);
+
+  const handleSelectUser = (u) => {
+    setCurrentUser(u);
+    localStorage.setItem("scrumboard_current_user", JSON.stringify(u));
+    setShowUserPicker(false);
+  };
 
   const loadItems = useCallback(async () => {
     try {
@@ -29,6 +48,7 @@ function App() {
   }, []);
 
   useEffect(() => { loadItems(); }, [loadItems]);
+  useEffect(() => { loadUsers(); }, [loadUsers]);
 
   const openCreate = (defaults = {}) => {
     setModalDefaults(defaults);
@@ -66,7 +86,7 @@ function App() {
   const sharedProps = { workItems, onStateChange: handleStateChange, onDelete: handleDelete, onNewItem: openCreate, onEdit: openEdit, reload: loadItems };
 
   return (
-    <div className="app-shell">
+    <div className="app-shell" onClick={() => setShowUserPicker(false)}>
       {/* ── Top bar ── */}
       <header className="topbar">
         <div className="topbar-logo">⚡</div>
@@ -88,6 +108,45 @@ function App() {
           )}
         </button>
         <div className="topbar-spacer" />
+        {/* Current User Picker */}
+        <div className="topbar-user-wrap">
+          <button
+            className="topbar-user-btn"
+            onClick={() => { setShowUserPicker(!showUserPicker); loadUsers(); }}
+            title="Switch active user"
+          >
+            <span className="topbar-user-icon">👤</span>
+            <span className="topbar-user-name">
+              {currentUser ? currentUser.name : "Select User"}
+            </span>
+            <span style={{ marginLeft: 4, opacity: 0.6 }}>▾</span>
+          </button>
+          {showUserPicker && (
+            <div className="user-picker-dropdown" onClick={e => e.stopPropagation()}>
+              <div className="user-picker-header">Switch Active User</div>
+              <button
+                className={`user-picker-item ${!currentUser ? "active" : ""}`}
+                onClick={() => handleSelectUser(null)}
+              >
+                <span className="user-picker-avatar" style={{ background: "#666" }}>?</span>
+                <span>None (Guest)</span>
+              </button>
+              {allUsers.map(u => (
+                <button
+                  key={u.id}
+                  className={`user-picker-item ${currentUser?.id === u.id ? "active" : ""}`}
+                  onClick={() => handleSelectUser(u)}
+                >
+                  <span className="user-picker-avatar" style={{ background: "#0078d4" }}>
+                    {u.name.charAt(0).toUpperCase()}
+                  </span>
+                  <span>{u.name}</span>
+                  <span className="user-picker-email">{u.email}</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
         <button className="btn btn-primary btn-sm" onClick={() => openCreate()}>+ New Item</button>
       </header>
 
@@ -97,12 +156,13 @@ function App() {
 
         {/* ── Main content ── */}
         <main className="main-content">
-          {page === "boards"     && <Boards     {...sharedProps} />}
+          {page === "boards"     && <Boards     {...sharedProps} currentProject={currentProject} currentUser={currentUser} />}
           {page === "sprints"    && <SprintBoard {...sharedProps} />}
           {page === "backlog"    && <Backlog    {...sharedProps} />}
           {page === "workitems"  && <WorkItems  {...sharedProps} />}
           {page === "reports"    && <Dashboard />}
           {page === "projects"   && <Projects onSelectProject={(p) => { setCurrentProject(p); }} />}
+          {page === "teams"      && <Teams />}
           {page === "retrospectives" && currentProject && <Retrospectives projectId={currentProject.id} />}
           {page === "settings"   && <Settings />}
           {page === "user-settings" && <UserSettings userId={1} />}

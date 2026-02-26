@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import KanbanBoard          from "../components/KanbanBoard.jsx";
 import BoardAnalytics       from "../components/BoardAnalytics.jsx";
 import EpicFeatureTimeline  from "../components/EpicFeatureTimeline.jsx";
 import FeatureTimeline      from "../components/FeatureTimeline.jsx";
 import EpicRoadmap          from "../components/EpicRoadmap.jsx";
+import { checkProjectAccess, getProjectTeams } from "../services/api.js";
 
 const TABS = [
   { key: "board",             label: "Board" },
@@ -15,10 +16,37 @@ const TABS = [
 
 const ITEM_TYPE_OPTIONS = ["Stories", "Bugs", "Tasks", "Features", "Epics"];
 
-export default function Boards({ workItems, onStateChange, onDelete, onNewItem, onEdit }) {
+export default function Boards({ workItems, onStateChange, onDelete, onNewItem, onEdit, currentProject, currentUser }) {
   const [activeTab,   setActiveTab]   = useState("board");
   const [typeFilter,  setTypeFilter]  = useState("Stories");
   const [showDropdown, setShowDropdown] = useState(false);
+  const [accessDenied, setAccessDenied] = useState(false);
+  const [accessChecking, setAccessChecking] = useState(false);
+  const [projectHasTeams, setProjectHasTeams] = useState(false);
+
+  // ── Access control: check if current user can view this project's board ──
+  useEffect(() => {
+    if (!currentProject) { setAccessDenied(false); return; }
+    // First check if the project has any teams assigned
+    getProjectTeams(currentProject.id)
+      .then((teams) => {
+        setProjectHasTeams(teams.length > 0);
+        if (teams.length === 0) {
+          // No teams assigned → open access
+          setAccessDenied(false);
+          return;
+        }
+        if (!currentUser) {
+          // Teams exist but no user selected → deny
+          setAccessDenied(true);
+          return;
+        }
+        // Check if the user belongs to a team mapped to this project
+        return checkProjectAccess(currentProject.id, currentUser.id)
+          .then((result) => setAccessDenied(!result.allowed));
+      })
+      .catch(() => setAccessDenied(false));
+  }, [currentProject?.id, currentUser?.id]); // eslint-disable-line
 
   // Filter work items by current type selection for board tab
   const typeMap = {
@@ -31,6 +59,32 @@ export default function Boards({ workItems, onStateChange, onDelete, onNewItem, 
   const boardItems = workItems.filter(w =>
     !typeMap[typeFilter] || w.work_item_type === typeMap[typeFilter]
   );
+
+  // ── Access Denied gate ──────────────────────────────────────────────────
+  if (accessDenied) {
+    return (
+      <div className="boards-access-denied">
+        <div className="access-denied-icon">🔒</div>
+        <h2>Access Restricted</h2>
+        <p>
+          {currentProject
+            ? `The board for "${currentProject.name}" is restricted to team members only.`
+            : "This board is restricted to team members only."}
+        </p>
+        {!currentUser && (
+          <p className="access-denied-hint">
+            Select your user from the top-right dropdown to check your access.
+          </p>
+        )}
+        {currentUser && (
+          <p className="access-denied-hint">
+            You (<strong>{currentUser.name}</strong>) are not a member of any team assigned to this project.
+            Contact your admin or go to <strong>Teams</strong> to request access.
+          </p>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="boards-page">

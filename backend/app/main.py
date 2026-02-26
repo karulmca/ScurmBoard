@@ -8,6 +8,8 @@ from .controllers.task_controller import router as task_router
 from .controllers.project_controller import router as project_router
 from .controllers.config_controller import router as config_router
 from .controllers.retrospective_controller import router as retrospective_router
+from .controllers.team_controller import router as team_router
+from .controllers.user_controller import router as user_router
 
 run_migrations()                        # add any new columns to existing DB
 Base.metadata.create_all(bind=engine)  # create tables if they don't exist yet
@@ -28,3 +30,5 @@ app.include_router(report_router)
 app.include_router(project_router)
 app.include_router(config_router)
 app.include_router(retrospective_router)
+app.include_router(team_router)
+app.include_router(user_router)

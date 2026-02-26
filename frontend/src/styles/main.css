@@ -4062,6 +4062,242 @@ textarea.form-control { resize: vertical; min-height: 70px; }
   font-style: italic;
 }
 
+/* =====================================================================
+   TEAMS PAGE
+   ===================================================================== */
+.teams-page { display: flex; flex-direction: column; height: 100%; gap: 0; }
+.teams-layout {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 0;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  border-top: 1px solid var(--ado-border);
+}
+
+/* ── Team list panel ── */
+.teams-list-panel {
+  border-right: 1px solid var(--ado-border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.teams-list-search { padding: 12px; border-bottom: 1px solid var(--ado-border); }
+.teams-list { list-style: none; margin: 0; padding: 0; overflow-y: auto; flex: 1; }
+.teams-list-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--ado-border);
+  transition: background .15s;
+}
+.teams-list-item:hover { background: var(--ado-hover); }
+.teams-list-item.active { background: #e5f0fb; border-left: 3px solid var(--ado-blue); }
+.teams-list-item-icon { flex-shrink: 0; }
+.teams-list-item-info { flex: 1; min-width: 0; }
+.teams-list-item-name { font-weight: 600; font-size: 14px; color: var(--ado-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.teams-list-item-count { font-size: 12px; color: var(--ado-muted); }
+.teams-list-item-actions { display: flex; gap: 4px; opacity: 0; transition: opacity .15s; }
+.teams-list-item:hover .teams-list-item-actions { opacity: 1; }
+
+/* ── Team avatar ── */
+.team-avatar {
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ── Detail panel ── */
+.teams-detail-panel { overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 24px; }
+.teams-detail-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: var(--ado-muted); height: 100%; }
+
+.teams-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--ado-border);
+}
+.teams-detail-title-wrap { flex: 1; }
+.teams-detail-name { font-size: 20px; font-weight: 700; margin: 0; color: var(--ado-text); }
+.teams-detail-desc { font-size: 13px; color: var(--ado-muted); margin: 2px 0 0; }
+
+/* ── Sections inside detail ── */
+.teams-section { display: flex; flex-direction: column; gap: 12px; }
+.teams-section-header { display: flex; align-items: center; justify-content: space-between; }
+.teams-section-header h3 { font-size: 15px; font-weight: 600; margin: 0; }
+
+/* ── Members roster ── */
+.team-members-roster { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.roster-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border: 1px solid var(--ado-border);
+  border-radius: 6px;
+  background: var(--ado-surface);
+}
+.roster-item-info { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.roster-item-name { font-weight: 600; font-size: 13px; }
+.roster-item-email { font-size: 12px; color: var(--ado-muted); }
+.roster-item-role {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: #e5f0fb;
+  color: var(--ado-blue);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ── Assigned projects ── */
+.assigned-projects-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.assigned-project-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border: 1px solid var(--ado-border);
+  border-radius: 6px;
+  background: var(--ado-surface);
+}
+.assigned-project-icon { font-size: 18px; }
+.assigned-project-name { flex: 1; font-weight: 600; font-size: 13px; }
+.assigned-project-key { font-size: 11px; color: var(--ado-muted); font-family: monospace; }
+
+/* ── Tab switch (used in AddUserModal) ── */
+.tab-switch { display: flex; gap: 0; border: 1px solid var(--ado-border); border-radius: 6px; overflow: hidden; margin-bottom: 16px; }
+.tab-switch-btn { flex: 1; padding: 7px 12px; border: none; background: var(--ado-surface); color: var(--ado-muted); font-size: 13px; font-weight: 500; cursor: pointer; transition: background .15s, color .15s; }
+.tab-switch-btn.active { background: var(--ado-blue); color: #fff; }
+
+/* ── Team modal ── */
+.team-modal { min-width: 400px; }
+.add-user-modal { min-width: 440px; }
+.form-hint { font-size: 12px; color: var(--ado-muted); margin: 0; }
+.form-error { font-size: 13px; color: #d13438; background: #fff4f4; border: 1px solid #d13438; border-radius: 4px; padding: 6px 10px; margin-bottom: 12px; }
+
+/* ── Topbar user picker ── */
+.topbar-user-wrap { position: relative; display: flex; align-items: center; margin-right: 12px; }
+.topbar-user-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.25);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background .15s;
+}
+.topbar-user-btn:hover { background: rgba(255,255,255,.2); }
+.topbar-user-icon { font-size: 15px; }
+.topbar-user-name { max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.user-picker-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 260px;
+  background: var(--ado-surface);
+  border: 1px solid var(--ado-border);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.15);
+  z-index: 1000;
+  overflow: hidden;
+}
+.user-picker-header { padding: 10px 14px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--ado-muted); border-bottom: 1px solid var(--ado-border); }
+.user-picker-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 14px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  font-size: 13px;
+  color: var(--ado-text);
+  transition: background .1s;
+}
+.user-picker-item:hover { background: var(--ado-hover); }
+.user-picker-item.active { background: #e5f0fb; color: var(--ado-blue); font-weight: 600; }
+.user-picker-avatar {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 700; font-size: 12px; flex-shrink: 0;
+}
+.user-picker-email { font-size: 11px; color: var(--ado-muted); margin-left: auto; }
+
+/* ── Access denied view ── */
+.boards-access-denied {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 12px;
+  color: var(--ado-text);
+  padding: 40px;
+  text-align: center;
+}
+.access-denied-icon { font-size: 56px; }
+.boards-access-denied h2 { font-size: 22px; font-weight: 700; margin: 0; }
+.boards-access-denied p { font-size: 15px; color: var(--ado-muted); max-width: 480px; margin: 0; }
+.access-denied-hint { font-size: 13px !important; color: var(--ado-muted) !important; margin-top: 4px !important; }
+
+/* ── ProjectModal Team Selector ── */
+.form-label-badge {
+  font-size: 10px; font-weight: 600; text-transform: uppercase;
+  padding: 2px 7px; border-radius: 10px;
+  background: #e5f0fb; color: var(--ado-blue);
+  margin-left: 8px; vertical-align: middle;
+}
+.team-selector-empty {
+  padding: 10px 14px; background: var(--ado-hover); border-radius: 6px;
+  font-size: 13px; color: var(--ado-muted); border: 1px dashed var(--ado-border);
+}
+.team-selector-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.team-selector-chip {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border: 1px solid var(--ado-border); border-radius: 20px;
+  background: var(--ado-surface); cursor: pointer; font-size: 13px; transition: all .15s;
+  user-select: none;
+}
+.team-selector-chip:hover { border-color: var(--ado-blue); background: #f0f7ff; }
+.team-selector-chip.selected { border-color: var(--ado-blue); background: #e5f0fb; color: var(--ado-blue); font-weight: 600; }
+.team-chip-check { width: 14px; font-size: 12px; color: var(--ado-blue); }
+.team-chip-name { font-weight: 500; }
+.team-chip-count { font-size: 11px; color: var(--ado-muted); }
+.team-selector-chip.selected .team-chip-count { color: var(--ado-blue); opacity: .8; }
+.team-access-summary { margin-top: 8px !important; }
+
+/* ── Project assigned-teams strip (sprint panel) ── */
+.project-teams-section {
+  padding: 6px 14px 10px;
+  border-bottom: 1px solid var(--ado-border);
+  background: #f5faff;
+}
+.project-teams-header { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; font-size: 13px; }
+.project-teams-icon { font-size: 15px; }
+.project-teams-label { color: var(--ado-muted); font-weight: 500; }
+.project-teams-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.project-team-chip {
+  padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;
+  background: #e5f0fb; color: var(--ado-blue); border: 1px solid #b8d4f5;
+}
+
 
 
 

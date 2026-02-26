@@ -1,13 +1,18 @@
 from fastapi import APIRouter, Depends, HTTPException, Body
 from sqlalchemy.orm import Session
+from typing import List
 from ..core.dependencies import get_db
 from ..schemas.user import UserCreate, UserUpdate, UserOut, ProjectRoleCreate, ProjectRoleUpdate, ProjectRoleOut
 from ..services.user_service import (
-    get_user, create_user, update_user, delete_user,
+    list_users, get_user, create_user, update_user, delete_user,
     get_project_role, assign_role, update_role, delete_role
 )
 
 router = APIRouter(prefix="", tags=["users"])
+
+@router.get("/users", response_model=List[UserOut])
+def get_users(db: Session = Depends(get_db)):
+    return list_users(db)
 
 @router.get("/users/{user_id}", response_model=UserOut)
 def get_user_detail(user_id: int, db: Session = Depends(get_db)):

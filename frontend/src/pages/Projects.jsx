@@ -7,6 +7,7 @@ import {
   getProjects, createProject, updateProject, deleteProject,
   getSprints, createSprint, updateSprint, activateSprint, completeSprint, deleteSprint,
   getOrganizations,
+  getTeams, getProjectTeams, assignTeamToProject, unassignTeamFromProject,
 } from "../services/api.js";
 
 const METHODOLOGY_COLOR = {
@@ -45,6 +46,7 @@ function SprintTimeline({ start, end }) {
 export default function Projects({ onSelectProject }) {
   const [projects,  setProjects]  = useState([]);
   const [orgs,      setOrgs]      = useState([]);
+  const [teams,     setTeams]     = useState([]);
   const [selected,  setSelected]  = useState(null);   // { project, sprints }
   const [loading,   setLoading]   = useState(true);
   const [teamMembers, setTeamMembers] = useState([]);
@@ -64,9 +66,10 @@ export default function Projects({ onSelectProject }) {
   const loadAll = useCallback(async () => {
     setLoading(true);
     try {
-      const [ps, os] = await Promise.all([getProjects(), getOrganizations()]);
+      const [ps, os, ts] = await Promise.all([getProjects(), getOrganizations(), getTeams()]);
       setProjects(ps);
       setOrgs(os);
+      setTeams(ts);
     } catch (e) {
       console.error(e);
     } finally {
@@ -78,10 +81,13 @@ export default function Projects({ onSelectProject }) {
 
   const loadSprints = async (project) => {
     try {
-      const sprints = await getSprints(project.id);
-        setSelected({ project, sprints });
-        const members = await getTeamMembers(project.id);
-        setTeamMembers(members);
+      const [sprints, members, projectTeams] = await Promise.all([
+        getSprints(project.id),
+        getTeamMembers(project.id),
+        getProjectTeams(project.id),
+      ]);
+      setSelected({ project, sprints, projectTeams });
+      setTeamMembers(members);
     } catch (e) {
       console.error(e);
     }
@@ -94,15 +100,30 @@ export default function Projects({ onSelectProject }) {
 
   // ── Project CRUD ────────────────────────────────────────────────────
   const handleSaveProject = async (data) => {
+    const { team_ids = [], ...projectData } = data;
+    let savedProject;
     if (editProject) {
-      await updateProject(editProject.id, data);
+      savedProject = await updateProject(editProject.id, projectData);
+      // Sync team assignments: unassign removed, assign new
+      const currentPT = await getProjectTeams(editProject.id);
+      const currentIds = currentPT.map((pt) => pt.team_id);
+      const toAdd    = team_ids.filter((id) => !currentIds.includes(id));
+      const toRemove = currentIds.filter((id) => !team_ids.includes(id));
+      await Promise.all([
+        ...toAdd.map((tid)    => assignTeamToProject(editProject.id, tid)),
+        ...toRemove.map((tid) => unassignTeamFromProject(editProject.id, tid)),
+      ]);
     } else {
-      await createProject(data);
+      savedProject = await createProject(projectData);
+      // Assign selected teams to the new project
+      if (team_ids.length > 0) {
+        await Promise.all(team_ids.map((tid) => assignTeamToProject(savedProject.id, tid)));
+      }
     }
     setShowProjModal(false);
     setEditProject(null);
     await loadAll();
-    if (selected) loadSprints(selected.project); // refresh if viewing
+    if (selected) loadSprints(selected.project);
   };
 
   const handleDeleteProject = async () => {
@@ -210,7 +231,16 @@ export default function Projects({ onSelectProject }) {
                         <button
                           className="icon-btn"
                           title="Edit"
-                          onClick={() => { setEditProject(p); setShowProjModal(true); }}
+                          onClick={async () => {
+                            // pre-load current team assignments so the modal can show them checked
+                            let teamIds = [];
+                            try {
+                              const pt = await getProjectTeams(p.id);
+                              teamIds = pt.map((t) => t.team_id);
+                            } catch {}
+                            setEditProject({ ...p, team_ids: teamIds });
+                            setShowProjModal(true);
+                          }}
                         >✏️</button>
                         <button
                           className="icon-btn danger"
@@ -287,6 +317,23 @@ export default function Projects({ onSelectProject }) {
                 )}
               </div>
 
+              {/* ── Assigned Teams Section ── */}
+              {selected.projectTeams && selected.projectTeams.length > 0 && (
+                <div className="project-teams-section">
+                  <div className="project-teams-header">
+                    <span className="project-teams-icon">👥</span>
+                    <span className="project-teams-label">Teams with access:</span>
+                    <span className="project-teams-chips">
+                      {selected.projectTeams.map((pt) => (
+                        <span key={pt.team_id ?? pt.id} className="project-team-chip">
+                          {pt.team_name ?? pt.name}
+                        </span>
+                      ))}
+                    </span>
+                  </div>
+                </div>
+              )}
+
             {selected.sprints.length === 0 ? (
               <div className="empty-state-sm">
                 No sprints yet — create one to start planning
@@ -346,6 +393,7 @@ export default function Projects({ onSelectProject }) {
         <ProjectModal
           initial={editProject || {}}
           organizations={orgs}
+          teams={teams}
           onSave={handleSaveProject}
           onClose={() => { setShowProjModal(false); setEditProject(null); }}
         />

@@ -252,3 +252,51 @@ export async function resetConfig(configKey, orgId = null) {
   const res = await fetch(`${API_BASE}/config/${configKey}${q}`, { method: "DELETE" });
   if (!res.ok && res.status !== 204) throw new Error(`Reset failed: ${res.status}`);
 }
+
+// ── Users (list) ───────────────────────────────────────────────────────────
+export const listUsers = () => fetchJson("/users");
+
+// ── Teams ──────────────────────────────────────────────────────────────────
+export const getTeams      = ()              => fetchJson("/teams");
+export const getTeam       = (id)            => fetchJson(`/teams/${id}`);
+export const createTeam    = (data)          => postJson("/teams", data);
+
+export async function updateTeam(id, data) {
+  const res = await fetch(`${API_BASE}/teams/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) { const d = await res.json().catch(() => ({})); throw new Error(d.detail || "Update failed"); }
+  return res.json();
+}
+
+export async function deleteTeam(id) {
+  const res = await fetch(`${API_BASE}/teams/${id}`, { method: "DELETE" });
+  if (!res.ok && res.status !== 204) throw new Error(`Delete failed: ${res.status}`);
+}
+
+// ── Team members ───────────────────────────────────────────────────────────
+export const getTeamMembers2 = (teamId)         => fetchJson(`/teams/${teamId}/members`);
+export const addUserToTeam   = (teamId, payload) => postJson(`/teams/${teamId}/members`, payload);
+
+export async function removeUserFromTeam(teamId, userId) {
+  const res = await fetch(`${API_BASE}/teams/${teamId}/members/${userId}`, { method: "DELETE" });
+  if (!res.ok && res.status !== 204) throw new Error(`Remove failed: ${res.status}`);
+}
+
+// ── Project ↔ Team mapping ──────────────────────────────────────────────────
+export const getProjectTeams = (projectId)          => fetchJson(`/projects/${projectId}/teams`);
+
+export async function assignTeamToProject(projectId, teamId) {
+  const res = await fetch(`${API_BASE}/projects/${projectId}/teams/${teamId}`, { method: "POST" });
+  if (!res.ok) { const d = await res.json().catch(() => ({})); throw new Error(d.detail || "Assign failed"); }
+  return res.json().catch(() => ({}));
+}
+
+export async function unassignTeamFromProject(projectId, teamId) {
+  const res = await fetch(`${API_BASE}/projects/${projectId}/teams/${teamId}`, { method: "DELETE" });
+  if (!res.ok && res.status !== 204) throw new Error(`Unassign failed: ${res.status}`);
+}
+
+export const checkProjectAccess = (projectId, userId) => fetchJson(`/projects/${projectId}/access/${userId}`);
