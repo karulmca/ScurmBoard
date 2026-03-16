@@ -10,6 +10,7 @@ const importRouter    = require('./routes/import');
 const projectsRouter  = require('./routes/projects');
 const configRouter    = require('./routes/config');
 const teamsRouter     = require('./routes/teams');
+const usersRouter     = require('./routes/users');
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -62,6 +63,7 @@ app.use('/api/workitems', workitemsRouter);
 app.use('/api/tasks',     tasksRouter);
 app.use('/api/reports',   reportsRouter);
 app.use('/api/import',    importRouter);
+app.use('/api/users',     usersRouter);
 app.use('/api',           teamsRouter);
 app.use('/api',           projectsRouter);
 app.use('/api/config',    configRouter);

@@ -1,6 +1,9 @@
 import React, { useCallback, useEffect, useState } from "react";
 import Sidebar from "./components/Sidebar.jsx";
 import WorkItemModal from "./components/WorkItemModal.jsx";
+import Login from "./components/Login.jsx";
+import Register from "./components/Register.jsx";
+import TeamProjectAssignment from "./components/TeamProjectAssignment.jsx";
 import Boards      from "./pages/Boards.jsx";
 import SprintBoard from "./pages/SprintBoard.jsx";
 import Backlog      from "./pages/Backlog.jsx";
@@ -13,6 +16,7 @@ import Retrospectives from "./pages/Retrospectives.jsx";
 import Teams from "./pages/Teams.jsx";
 import { listUsers } from "./services/api.js";
 import { getWorkItems, createWorkItem, updateWorkItem, updateTaskStatus, deleteWorkItem } from "./services/api.js";
+import { isAuthenticated, getAuthUser, logoutUser } from "./services/auth.js";
 
 function App() {
   const [page, setPage] = useState("boards");
@@ -20,10 +24,17 @@ function App() {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalDefaults, setModalDefaults] = useState({});
   const [currentProject, setCurrentProject] = useState(null);
+  
+  // Authentication state
+  const [authUser, setAuthUser] = useState(() => {
+    try { return getAuthUser(); } catch { return null; }
+  });
+  const [showAuthPage, setShowAuthPage] = useState("login"); // "login", "register"
+  const [showAssignment, setShowAssignment] = useState(false);
 
   // currentUser: selected via topbar picker — drives board access control
   const [currentUser, setCurrentUser] = useState(() => {
-    try { return JSON.parse(localStorage.getItem("scrumboard_current_user")) || null; } catch { return null; }
+    try { return JSON.parse(localStorage.getItem("scrumboard_current_user")) || authUser || null; } catch { return authUser || null; }
   });
   const [showUserPicker, setShowUserPicker] = useState(false);
   const [allUsers, setAllUsers] = useState([]);
@@ -31,6 +42,32 @@ function App() {
   const loadUsers = useCallback(async () => {
     try { const u = await listUsers(); setAllUsers(u); } catch {}
   }, []);
+
+  const handleLoginSuccess = (user) => {
+    setAuthUser(user);
+    setCurrentUser(user);
+    localStorage.setItem("scrumboard_current_user", JSON.stringify(user));
+    setShowAssignment(true);
+  };
+
+  const handleRegisterSuccess = (user) => {
+    setAuthUser(user);
+    setCurrentUser(user);
+    localStorage.setItem("scrumboard_current_user", JSON.stringify(user));
+    setShowAssignment(true);
+  };
+
+  const handleAssignmentComplete = () => {
+    setShowAssignment(false);
+  };
+
+  const handleLogout = () => {
+    logoutUser();
+    setAuthUser(null);
+    setCurrentUser(null);
+    setPage("boards");
+    setShowAuthPage("login");
+  };
 
   const handleSelectUser = (u) => {
     setCurrentUser(u);
@@ -84,6 +121,37 @@ function App() {
   };
 
   const sharedProps = { workItems, onStateChange: handleStateChange, onDelete: handleDelete, onNewItem: openCreate, onEdit: openEdit, reload: loadItems };
+
+  // Show login/register if not authenticated
+  if (!authUser || !isAuthenticated()) {
+    return (
+      <div className="app">
+        {showAuthPage === "login" ? (
+          <Login onLoginSuccess={handleLoginSuccess} onSwitchToRegister={() => setShowAuthPage("register")} />
+        ) : (
+          <Register onRegisterSuccess={handleRegisterSuccess} onSwitchToLogin={() => setShowAuthPage("login")} />
+        )}
+        <div className="auth-toggle">
+          {showAuthPage === "login" ? (
+            <p>
+              Don't have an account?{" "}
+              <button onClick={() => setShowAuthPage("register")}>Register</button>
+            </p>
+          ) : (
+            <p>
+              Already have an account?{" "}
+              <button onClick={() => setShowAuthPage("login")}>Login</button>
+            </p>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Show team/project assignment after login
+  if (showAssignment) {
+    return <TeamProjectAssignment user={authUser} onComplete={handleAssignmentComplete} />;
+  }
 
   return (
     <div className="app-shell" onClick={() => setShowUserPicker(false)}>
@@ -148,6 +216,7 @@ function App() {
           )}
         </div>
         <button className="btn btn-primary btn-sm" onClick={() => openCreate()}>+ New Item</button>
+        <button className="btn btn-secondary btn-sm" onClick={handleLogout}>Logout</button>
       </header>
 
       <div className="app-body">

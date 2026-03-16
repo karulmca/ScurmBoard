@@ -16,12 +16,26 @@ Base.metadata.create_all(bind=engine)  # create tables if they don't exist yet
 
 app = FastAPI(title="Scrum Update Tracking System")
 
+# ── CORS Configuration ──────────────────────────────────────────────
+CORS_ORIGINS = [
+    "http://localhost:3000",   # API Gateway
+    "http://localhost:5173",   # Vite dev server (frontend)
+    "http://localhost:5174",   # Vite dev server (frontend - alternate port)
+    "http://localhost:8081",   # Expo web
+    "http://localhost:19006",  # Expo web (older)
+    "http://10.0.2.2:3000",    # Android emulator
+    "http://10.0.2.2:5173",    # Android emulator (frontend)
+    "http://10.0.2.2:5174",    # Android emulator (frontend - alternate port)
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=CORS_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
+    expose_headers=["Content-Range", "X-Content-Range"],
+    max_age=3600,
 )
 
 app.include_router(import_router)

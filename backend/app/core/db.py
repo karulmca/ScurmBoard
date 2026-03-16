@@ -26,9 +26,44 @@ if __name__ == "__main__":
 
 
 def run_migrations() -> None:
-    """Safely add new columns to existing tables (SQLite-compatible)."""
+    """Safely add new columns to existing tables (PostgreSQL-compatible)."""
     inspector = inspect(engine)
-    # Only migrate if the tasks table already exists
+
+    # Handle users table migrations
+    if "users" in inspector.get_table_names():
+        users_existing = {col["name"] for col in inspector.get_columns("users")}
+        users_columns = {
+            "password_hash": "ALTER TABLE users ADD COLUMN password_hash VARCHAR",
+            "global_role": "ALTER TABLE users ADD COLUMN global_role VARCHAR DEFAULT 'Developer'",
+            "is_active": "ALTER TABLE users ADD COLUMN is_active BOOLEAN DEFAULT TRUE",
+        }
+        with engine.begin() as conn:
+            for col, sql in users_columns.items():
+                if col not in users_existing:
+                    print(f"Adding column {col} to users table...")
+                    conn.execute(text(sql))
+
+            # Update existing users to have Developer role if they don't have a role
+            try:
+                conn.execute(text("UPDATE users SET global_role = 'Developer' WHERE global_role IS NULL"))
+                conn.execute(text("UPDATE users SET is_active = TRUE WHERE is_active IS NULL"))
+            except:
+                pass  # Ignore if columns don't exist yet
+
+    # Handle project_roles table migrations
+    if "project_roles" in inspector.get_table_names():
+        roles_existing = {col["name"] for col in inspector.get_columns("project_roles")}
+        roles_columns = {
+            "assigned_at": "ALTER TABLE project_roles ADD COLUMN assigned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP",
+            "assigned_by": "ALTER TABLE project_roles ADD COLUMN assigned_by INTEGER REFERENCES users(id)",
+        }
+        with engine.begin() as conn:
+            for col, sql in roles_columns.items():
+                if col not in roles_existing:
+                    print(f"Adding column {col} to project_roles table...")
+                    conn.execute(text(sql))
+
+    # Handle tasks table migrations
     if "tasks" not in inspector.get_table_names():
         return
     existing = {col["name"] for col in inspector.get_columns("tasks")}

@@ -165,8 +165,19 @@ def can_user_access_project(db: Session, user_id: int, project_id: int) -> bool:
     """
     Returns True if:
      - No teams are assigned to the project (open access), OR
-     - The user belongs to at least one team assigned to the project.
+     - The user belongs to at least one team assigned to the project, OR
+     - The user has an Admin role in the project.
     """
+    # Check if user has Admin role
+    from ..models.user import ProjectRole
+    admin_role = db.query(ProjectRole).filter(
+        ProjectRole.user_id == user_id,
+        ProjectRole.project_id == project_id,
+        ProjectRole.role == "Admin"
+    ).first()
+    if admin_role:
+        return True  # Admins have full access
+
     assigned_teams = (
         db.query(ProjectTeam).filter(ProjectTeam.project_id == project_id).all()
     )
